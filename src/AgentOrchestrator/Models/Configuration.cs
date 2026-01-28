@@ -22,7 +22,7 @@ public class AzureOpenAISettings
 public class MicrosoftGraphSettings
 {
     public string BaseUrl { get; set; } = "https://graph.microsoft.com/beta";
-    public string CopilotChatEndpoint { get; set; } = "/me/copilot/chats";
+    public string CopilotChatEndpoint { get; set; } = "/copilot/conversations";
 }
 
 public class OrchestrationSettings

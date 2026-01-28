@@ -79,7 +79,12 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
    # Initialize user secrets
    dotnet user-secrets init
 
-   # Set Azure AD credentials
+   # Set Bot Service credentials
+   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientId" "your-bot-client-id"
+   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientSecret" "your-bot-secret"
+   dotnet user-secrets set "Connections:BotServiceConnection:Settings:TenantId" "your-tenant-id"
+
+   # Set Azure AD credentials (for user authentication)
    dotnet user-secrets set "AzureAd:TenantId" "your-tenant-id"
    dotnet user-secrets set "AzureAd:ClientId" "your-client-id"
    dotnet user-secrets set "AzureAd:ClientSecret" "your-client-secret"
@@ -135,6 +140,8 @@ src/AgentOrchestrator/
 │   └── SynthesisPlugin.cs
 ├── CopilotSdk/                # Kiota-generated API client
 ├── Auth/                      # Authentication components
+├── Security/                  # Security utilities
+│   └── InputSanitizer.cs      # Prompt injection protection
 ├── Models/                    # Data models
 └── wwwroot/                   # Web UI
 ```

@@ -62,12 +62,21 @@ In this lab, you'll build an orchestration pattern where:
 
 1. Open a terminal and navigate to the lab folder:
    ```bash
-   cd chat_api_lab/src/AgentOrchestrator
+   cd src/AgentOrchestrator
    ```
 
 2. Open `appsettings.json` and update with your credentials:
    ```json
    {
+     "Connections": {
+       "BotServiceConnection": {
+         "Settings": {
+           "ClientId": "<your-bot-client-id>",
+           "ClientSecret": "<your-bot-client-secret>",
+           "TenantId": "<your-tenant-id>"
+         }
+       }
+     },
      "AzureAd": {
        "TenantId": "<your-tenant-id>",
        "ClientId": "<your-client-id>",
@@ -77,9 +86,24 @@ In this lab, you'll build an orchestration pattern where:
        "Endpoint": "https://<your-resource>.openai.azure.com/",
        "ApiKey": "<your-api-key>",
        "DeploymentName": "gpt-4o"
+     },
+     "AgentApplication": {
+       "UserAuthorization": {
+         "DefaultHandlerName": "graph",
+         "AutoSignIn": true,
+         "Handlers": {
+           "graph": {
+             "Settings": {
+               "AzureBotOAuthConnectionName": "GraphConnection"
+             }
+           }
+         }
+       }
      }
    }
    ```
+
+   > **Important for Teams SSO**: The `AgentApplication.UserAuthorization` section is required for Teams authentication. The `AzureBotOAuthConnectionName` must match the OAuth connection name in Azure Bot Service.
 
 ### Step 1.2: Run the Application
 
@@ -110,18 +134,18 @@ info: Microsoft.Hosting.Lifetime[14]
 
 Open `Agent/OrchestratorAgent.cs` and review:
 
-1. **Class Declaration** (line 12): Extends `AgentApplication` from M365 Agents SDK
+1. **Class Declaration** (line 13): Extends `AgentApplication` from M365 Agents SDK
    ```csharp
    public class OrchestratorAgent : AgentApplication
    ```
 
-2. **Activity Handlers** (lines 32-33): Register handlers for message and conversation events
+2. **Activity Handlers** (lines 45-46): Register handlers for message and conversation events
    ```csharp
    OnActivity(ActivityTypes.Message, OnMessageActivityAsync);
    OnActivity(ActivityTypes.ConversationUpdate, OnConversationUpdateAsync);
    ```
 
-3. **Message Processing** (lines 36-93): The main orchestration flow
+3. **Message Processing** (line 49+): The main orchestration flow
    - Analyze intent using IntentPlugin
    - Execute plugins in parallel based on intents
    - Synthesize responses using SynthesisPlugin
