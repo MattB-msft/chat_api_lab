@@ -1,0 +1,69 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.0",
+  "id": "{{BOT_APP_ID}}",
+  "developer": {
+    "name": "Agent Orchestrator Lab",
+    "websiteUrl": "https://{{BOT_DOMAIN}}",
+    "privacyUrl": "https://{{BOT_DOMAIN}}/privacy",
+    "termsOfUseUrl": "https://{{BOT_DOMAIN}}/terms"
+  },
+  "name": {
+    "short": "Agent Orchestrator",
+    "full": "Agent Orchestrator - M365 Copilot Integration"
+  },
+  "description": {
+    "short": "AI agent for M365 data and general knowledge",
+    "full": "An AI-powered agent that can query your M365 data (emails, calendar, files, people) and answer general knowledge questions using Azure OpenAI."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#0078D4",
+  "bots": [
+    {
+      "botId": "{{BOT_APP_ID}}",
+      "scopes": ["personal", "team", "groupChat"],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal"],
+          "commands": [
+            {
+              "title": "help",
+              "description": "Get help with using the agent"
+            },
+            {
+              "title": "emails",
+              "description": "Query your recent emails"
+            },
+            {
+              "title": "calendar",
+              "description": "Check your upcoming meetings"
+            },
+            {
+              "title": "files",
+              "description": "Search your OneDrive files"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "{{BOT_DOMAIN}}",
+    "token.botframework.com",
+    "login.microsoftonline.com"
+  ],
+  "webApplicationInfo": {
+    "id": "{{BOT_APP_ID}}",
+    "resource": "api://{{BOT_DOMAIN}}/{{BOT_APP_ID}}"
+  }
+}

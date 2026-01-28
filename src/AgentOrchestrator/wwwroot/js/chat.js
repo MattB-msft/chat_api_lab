@@ -91,34 +91,20 @@ const Chat = {
     },
 
     async sendActivity(message) {
-        // Create an Activity object per the Bot Framework protocol
-        const activity = {
-            type: 'message',
-            text: message,
-            from: {
-                id: 'web-user',
-                name: 'Web User'
-            },
-            conversation: {
-                id: this.conversationId
-            },
-            channelId: 'webchat',
-            timestamp: new Date().toISOString()
-        };
-
         Trace.addStep({
             stepId: 1,
             agent: 'web_client',
-            action: 'sending_activity',
+            action: 'sending_message',
             status: 'started'
         });
 
-        const response = await fetch('/api/messages', {
+        // Use the simple chat endpoint for web UI
+        const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(activity),
+            body: JSON.stringify({ message: message }),
             // SECURITY: Required for session cookies to be sent with the request
             // Without this, the server won't receive the authentication session
             credentials: 'include'
@@ -135,18 +121,8 @@ const Chat = {
             throw new Error(errorMessage);
         }
 
-        // The Agents SDK may return a response activity or empty body
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const responseActivity = await response.json();
-            if (responseActivity && responseActivity.text) {
-                return responseActivity.text;
-            }
-        }
-
-        // If no JSON response, the agent may have sent activities via a callback
-        // For now, return a success message - in production, you'd use DirectLine or WebSocket
-        return 'Message processed. Check the trace panel for details.';
+        const result = await response.json();
+        return result.text || 'No response received.';
     },
 
     addMessage(content, role, isStreaming = false) {

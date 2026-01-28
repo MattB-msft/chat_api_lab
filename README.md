@@ -172,11 +172,57 @@ The Copilot Chat API (`/beta/copilot/conversations`) enables:
 
 ---
 
+## Deployment
+
+### Local Development
+
+For local development, run with the Development environment:
+
+```bash
+cd src/AgentOrchestrator
+ASPNETCORE_ENVIRONMENT=Development dotnet run
+```
+
+### Deploy to Azure (Teams & Copilot)
+
+To deploy as a Microsoft Teams bot or M365 Copilot agent:
+
+1. **Azure App Service** - Host your .NET 10 application
+2. **Azure Bot Service** - Provides channel integration (Teams, Copilot, Web Chat)
+3. **Teams App Package** - Manifest for Microsoft Teams
+
+See **[Azure Deployment Guide](docs/AZURE_DEPLOYMENT.md)** for complete step-by-step instructions.
+
+```
+src/AgentOrchestrator/
+├── appsettings.json      # Includes Bot Service connection config
+└── appPackage/
+    ├── manifest.json     # Teams/Copilot app manifest
+    ├── color.png         # App icon (192x192)
+    └── outline.png       # App icon (32x32)
+```
+
+---
+
 ## For Lab Participants
 
-### Security Notice
+### Security Features
 
-This lab uses simplified patterns for educational purposes. Pay attention to these markers in the code:
+This lab implements production-grade security practices:
+
+| Feature | Implementation |
+|---------|----------------|
+| **Token Encryption** | AES-256 encryption at rest using PBKDF2-derived keys |
+| **Session Cleanup** | Automatic TTL-based cleanup (8hr session, 15min cleanup interval) |
+| **Prompt Injection Protection** | Input sanitization with XML delimiters and suspicious pattern detection |
+| **CSRF Protection** | Cryptographically secure state parameter using `RandomNumberGenerator` |
+| **Error Handling** | Generic error messages to users; detailed logging server-side |
+| **Swagger Protection** | API documentation only available in Development environment |
+| **Thread-Safe Token Refresh** | Per-session semaphores prevent concurrent refresh race conditions |
+
+### Security Markers in Code
+
+Pay attention to these markers in the code:
 
 | Marker | Meaning |
 |--------|---------|
@@ -186,9 +232,9 @@ This lab uses simplified patterns for educational purposes. Pay attention to the
 
 **Key differences from production code:**
 - **Secrets:** Lab uses `appsettings.json` template; production uses Azure Key Vault
-- **Token Cache:** Lab uses in-memory; production uses Redis or SQL Server
+- **Token Cache:** Lab encrypts in-memory; production uses Redis with encryption
 - **Session Storage:** Lab uses in-memory; production uses distributed cache
-- **HTTP:** Lab runs on HTTP; production requires HTTPS
+- **HTTP:** Lab runs on HTTP locally; production requires HTTPS
 
 ### Common Issues
 

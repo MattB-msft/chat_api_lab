@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using AgentOrchestrator.CopilotSdk;
 using AgentOrchestrator.Models;
+using Microsoft.Kiota.Abstractions;
 using Microsoft.Kiota.Abstractions.Authentication;
 using Microsoft.Kiota.Http.HttpClientLibrary;
+using Microsoft.Kiota.Serialization.Json;
 using Microsoft.SemanticKernel;
 using CopilotChatRequest = AgentOrchestrator.CopilotSdk.Models.ChatRequest;
 using CopilotMessageParameter = AgentOrchestrator.CopilotSdk.Models.MessageParameter;
@@ -182,7 +184,11 @@ public class M365CopilotPlugin
         var authProvider = new BaseBearerTokenAuthenticationProvider(
             new TokenProvider(accessToken));
 
-        // Create request adapter (handles serialization internally)
+        // Register JSON serialization factories (required by Kiota)
+        ApiClientBuilder.RegisterDefaultSerializer<JsonSerializationWriterFactory>();
+        ApiClientBuilder.RegisterDefaultDeserializer<JsonParseNodeFactory>();
+
+        // Create request adapter with JSON parsing support
         var adapter = new HttpClientRequestAdapter(authProvider, httpClient: httpClient);
 
         return new CopilotApi(adapter);

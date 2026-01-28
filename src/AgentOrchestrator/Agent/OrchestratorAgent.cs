@@ -19,6 +19,11 @@ public class OrchestratorAgent : AgentApplication
     private readonly ILogger<OrchestratorAgent> _logger;
 
     private const int MaxMessageLength = 4000;
+    
+    /// <summary>
+    /// OAuth handler name configured in appsettings.json under AgentApplication:UserAuthorization:Handlers
+    /// </summary>
+    private const string OAuthHandlerName = "graph";
 
     public OrchestratorAgent(
         AgentApplicationOptions options,
@@ -35,6 +40,8 @@ public class OrchestratorAgent : AgentApplication
         _logger = logger;
 
         // Register activity handlers
+        // Note: We don't use autoSignInHandlers here because we need to handle auth differently
+        // for general knowledge queries (no auth needed) vs M365 queries (auth required)
         OnActivity(ActivityTypes.Message, OnMessageActivityAsync);
         OnActivity(ActivityTypes.ConversationUpdate, OnConversationUpdateAsync);
     }
@@ -44,7 +51,13 @@ public class OrchestratorAgent : AgentApplication
         ITurnState turnState,
         CancellationToken cancellationToken)
     {
-        var userMessage = turnContext.Activity.Text?.Trim() ?? string.Empty;
+        var activity = turnContext.Activity;
+        var userMessage = activity.Text?.Trim() ?? string.Empty;
+        
+        _logger.LogInformation("=== MESSAGE RECEIVED ===");
+        _logger.LogInformation("Channel: {Channel}", activity.ChannelId);
+        _logger.LogInformation("From: {From}", activity.From?.Id);
+        _logger.LogInformation("Text: {Text}", userMessage);
 
         if (string.IsNullOrEmpty(userMessage))
         {
@@ -72,10 +85,7 @@ public class OrchestratorAgent : AgentApplication
             timeoutCts.CancelAfter(TimeSpan.FromSeconds(_orchestrationSettings.TimeoutSeconds));
             var timeoutToken = timeoutCts.Token;
 
-            // Get user's access token for M365 Copilot calls
-            var accessToken = await GetUserAccessTokenAsync(turnContext, timeoutToken);
-
-            // Step 1: Analyze intent
+            // Step 1: Analyze intent (before auth so we can allow general queries)
             _logger.LogInformation("Step 1: Analyzing intent...");
             var intents = await AnalyzeIntentAsync(userMessage, timeoutToken);
 
@@ -91,10 +101,64 @@ public class OrchestratorAgent : AgentApplication
                 intents.Count,
                 string.Join(", ", intents.Select(i => i.Type)));
 
+            // Check if any M365 intents require authentication
+            var hasM365Intent = intents.Any(i =>
+                i.Type == IntentType.M365Email ||
+                i.Type == IntentType.M365Calendar ||
+                i.Type == IntentType.M365Files ||
+                i.Type == IntentType.M365People);
+
+            // Get user's access token only if needed for M365 calls
+            string? accessToken = null;
+            if (hasM365Intent)
+            {
+                try
+                {
+                    accessToken = await GetUserAccessTokenAsync(turnContext, timeoutToken);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _logger.LogWarning(ex, "Auth failed for M365 intent, falling back to general knowledge");
+
+                    // For Teams, give a helpful message and handle general knowledge intents only
+                    var channelId = turnContext.Activity.ChannelId;
+                    if (channelId == "msteams")
+                    {
+                        // Filter to only general knowledge intents
+                        var generalIntents = intents.Where(i => i.Type == IntentType.GeneralKnowledge).ToList();
+
+                        if (generalIntents.Count > 0)
+                        {
+                            // Continue with just general knowledge
+                            intents = generalIntents;
+                            accessToken = string.Empty; // Not needed for general knowledge
+                        }
+                        else
+                        {
+                            // All intents require M365 - user needs to sign in
+                            // This should rarely happen since AutoSignIn is enabled
+                            await turnContext.SendActivityAsync(
+                                MessageFactory.Text(
+                                    "To access your M365 data (emails, calendar, files), I need you to sign in first.\n\n" +
+                                    "Please click the Sign In button when prompted, or try sending your message again.\n\n" +
+                                    "In the meantime, I can answer general knowledge questions. Try:\n" +
+                                    "- \"What is machine learning?\"\n" +
+                                    "- \"Explain microservices\""),
+                                cancellationToken);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        throw; // Re-throw for web channel
+                    }
+                }
+            }
+
             // Step 2: Execute agents based on intents
             _logger.LogInformation("Step 2: Executing agents (parallel={Parallel})...",
                 _orchestrationSettings.EnableParallelExecution);
-            var responses = await ExecuteAgentsAsync(intents, accessToken, timeoutToken);
+            var responses = await ExecuteAgentsAsync(intents, accessToken ?? string.Empty, timeoutToken);
 
             // Step 3: Synthesize response
             _logger.LogInformation("Step 3: Synthesizing response...");
@@ -214,11 +278,12 @@ public class OrchestratorAgent : AgentApplication
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error executing agent for intent {IntentType}", intent.Type);
+            // SECURITY: Don't expose exception details to users
             return new AgentResponse
             {
                 Agent = intent.Type.ToString(),
                 IntentType = intent.Type,
-                Content = $"Error: {ex.Message}",
+                Content = "Sorry, I encountered an issue processing this part of your request.",
                 Success = false
             };
         }
@@ -316,9 +381,20 @@ public class OrchestratorAgent : AgentApplication
         ITurnContext turnContext,
         CancellationToken cancellationToken)
     {
-        // For web channel, get token from HTTP context session
-        var httpContext = _httpContextAccessor.HttpContext
-            ?? throw new UnauthorizedAccessException("No HTTP context available. Please log in via the web interface.");
+        var channelId = turnContext.Activity.ChannelId;
+
+        // Handle Teams channel with SSO
+        if (channelId == "msteams")
+        {
+            return await GetTeamsSsoTokenAsync(turnContext, cancellationToken);
+        }
+
+        // For web/emulator channel, get token from HTTP context session
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
+        {
+            throw new UnauthorizedAccessException("No HTTP context available. Please log in via the web interface.");
+        }
 
         var sessionId = httpContext.Session.Id;
         if (string.IsNullOrEmpty(sessionId))
@@ -339,10 +415,52 @@ public class OrchestratorAgent : AgentApplication
             _logger.LogWarning(ex, "Token not found for session {SessionId}", sessionId);
         }
 
-        // TODO: For Teams channel support, implement SSO flow here
-        // See: https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/authentication/auth-aad-sso-bots
-
         throw new UnauthorizedAccessException("No access token available. Please log in.");
+    }
+
+    /// <summary>
+    /// Get access token for Teams users using the M365 Agents SDK UserAuthorization.
+    ///
+    /// The SDK handles:
+    /// 1. Automatic sign-in card display when no token is available
+    /// 2. Token caching and refresh
+    /// 3. SSO token exchange (when configured)
+    ///
+    /// Configuration is in appsettings.json under AgentApplication:UserAuthorization
+    /// See: https://learn.microsoft.com/en-us/microsoft-365/agents-sdk/agent-oauth-configuration-dotnet
+    /// </summary>
+    private async Task<string> GetTeamsSsoTokenAsync(
+        ITurnContext turnContext,
+        CancellationToken cancellationToken)
+    {
+        var activity = turnContext.Activity;
+        var userId = activity.From?.Id ?? "unknown";
+
+        _logger.LogInformation("Getting token for Teams user {UserId} via SDK UserAuthorization", userId);
+
+        try
+        {
+            // Use the SDK's built-in UserAuthorization to get token
+            // This automatically handles sign-in cards, token exchange, and caching
+            var token = await UserAuthorization.GetTurnTokenAsync(turnContext, OAuthHandlerName);
+            
+            if (!string.IsNullOrEmpty(token))
+            {
+                _logger.LogInformation("Token retrieved successfully for Teams user {UserId}", userId);
+                return token;
+            }
+            
+            _logger.LogWarning("GetTurnTokenAsync returned null/empty for user {UserId}", userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to get token via SDK for user {UserId}", userId);
+        }
+
+        // If SDK didn't return a token, sign-in is required
+        // The SDK should have already sent a sign-in card, but we'll throw to stop processing
+        throw new UnauthorizedAccessException(
+            "Please sign in using the button above to access your M365 data.");
     }
 
     private async Task OnConversationUpdateAsync(

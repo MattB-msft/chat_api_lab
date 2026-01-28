@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgentOrchestrator.Auth;
@@ -22,8 +23,9 @@ public static class AuthEndpoints
         // This ensures token storage and retrieval use the same key
         var sessionId = context.Session.Id;
 
-        // Build authorization URL with state parameter for CSRF protection
-        var state = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        // Build authorization URL with cryptographically secure state parameter for CSRF protection
+        var stateBytes = RandomNumberGenerator.GetBytes(32);
+        var state = Convert.ToBase64String(stateBytes);
         context.Session.SetString("AuthState", state);
 
         var authUrl = await tokenService.BuildAuthorizationUrlAsync(state);

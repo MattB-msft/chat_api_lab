@@ -58,6 +58,8 @@ echo -e "${YELLOW}Copying files...${NC}"
 rsync -av --delete \
     --exclude='.git' \
     --exclude='.git/' \
+    --exclude='.claude' \
+    --exclude='.claude/' \
     --exclude='appsettings.Development.json' \
     --exclude='appsettings.Local.json' \
     --exclude='*.local.json' \
@@ -66,6 +68,8 @@ rsync -av --delete \
     --exclude='secrets.json' \
     --exclude='bin/' \
     --exclude='obj/' \
+    --exclude='out/' \
+    --exclude='publish/' \
     --exclude='.vs/' \
     --exclude='.vscode/' \
     --exclude='.idea/' \
@@ -73,6 +77,8 @@ rsync -av --delete \
     --exclude='*.suo' \
     --exclude='.DS_Store' \
     --exclude='Thumbs.db' \
+    --exclude='deploy.zip' \
+    --exclude='*.zip' \
     "$SOURCE_DIR/" "$DEST_DIR/"
 
 echo ""
