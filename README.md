@@ -45,13 +45,14 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 
 ## Technology Stack
 
-| Component | Technology |
-|-----------|------------|
-| **Agent Framework** | Microsoft 365 Agents SDK 1.1.x |
-| **Orchestration** | Semantic Kernel 1.54.x |
-| **AI Model** | Azure OpenAI (GPT-4o) |
-| **M365 Integration** | Microsoft Graph Copilot Chat API |
-| **Runtime** | .NET 8 |
+- **.NET 8** - Target framework
+- **Microsoft 365 Agents SDK 1.4** - Agent framework with multi-channel support
+- **Semantic Kernel 1.54** - AI orchestration and plugin pattern
+- **Azure OpenAI** - GPT-4o for intent analysis and general knowledge
+- **Microsoft Graph Copilot Chat API** - Beta endpoint for M365 data
+- **Kiota** - SDK generation for Graph API
+- **MSAL** - Microsoft Authentication Library
+- **xUnit** - Test framework with Moq for mocking
 
 ## Quick Start
 
@@ -63,7 +64,6 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 - Azure subscription with Azure OpenAI access
   - Configured Azure Open AI with a gpt-4o-mini model
 - Azure AD app registration permission or appID with secret
-
 
 ### Setup
 
@@ -91,23 +91,33 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 | General | "Explain what microservices are" |
 | Multi-Intent | "Summarize my emails and explain REST APIs" |
 
+
 ## Project Structure
 
 ```
-src/AgentOrchestrator/
-├── Program.cs                 # App entry, DI, agent registration
-├── Agent/
-│   └── OrchestratorAgent.cs   # AgentApplication implementation
-├── Plugins/                   # Semantic Kernel plugins
-│   ├── IntentPlugin.cs
-│   ├── AzureOpenAIPlugin.cs
-│   ├── M365CopilotPlugin.cs
-│   └── SynthesisPlugin.cs
-├── CopilotSdk/                # Kiota-generated API client
-├── Auth/                      # Authentication components
-├── Models/                    # Data models
-└── wwwroot/                   # Web UI
+AgentOrchestrator/
+├── src/
+│   ├── Agent/
+│   │   └── OrchestratorAgent.cs       # Main agent orchestration logic
+│   ├── Plugins/                       # Semantic Kernel plugins
+│   │   ├── AgentContext.cs            # Context passed to plugins
+│   │   ├── IntentPlugin.cs            # Intent classification
+│   │   ├── M365CopilotPlugin.cs       # M365 Copilot integration
+│   │   ├── AzureOpenAIPlugin.cs       # General knowledge
+│   │   └── SynthesisPlugin.cs         # Response aggregation
+│   ├── Models/                        # Data models and configuration
+│   │   ├── Configuration.cs           # Settings classes
+│   │   ├── Intent.cs                  # Intent types
+│   │   └── AgentResponse.cs           # Agent response model
+│   ├── Constants/                     # Plugin names and constants
+│   ├── Program.cs                     # DI, middleware, agent registration
+│   └── appsettings.json               # Configuration template
+├── tests/
+│   └── AgentOrchestrator.Tests/       # xUnit tests
+├── appPackage/                        # Teams app manifest
+└── infra/                             # Infrastructure scripts
 ```
+
 
 ## Documentation
 
