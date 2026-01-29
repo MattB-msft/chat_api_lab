@@ -1,9 +1,5 @@
 # Microsoft 365 Copilot Chat API + Agents SDK Lab
 
-> **🚀 Quick Start Options:**
-> - [Local Development](QUICK_START_LOCAL.md) — Run locally in 10 minutes
-> - [Azure Deployment](QUICK_START.md) — Deploy to Azure with Teams integration
-
 ## Why Microsoft 365 Copilot in Your Agent Architecture?
 
 As AI applications evolve toward **multi-agent architectures**, the question isn't whether to use multiple agents—it's which agents provide the most value. **Microsoft 365 Copilot** offers unique capabilities that no custom RAG pipeline can easily replicate:
@@ -55,61 +51,26 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 | **Orchestration** | Semantic Kernel 1.54.x |
 | **AI Model** | Azure OpenAI (GPT-4o) |
 | **M365 Integration** | Microsoft Graph Copilot Chat API |
-| **Runtime** | .NET 10 |
+| **Runtime** | .NET 8 |
 
 ## Quick Start
 
 ### Prerequisites
 
-- .NET 10 SDK (Preview - see note below)
+- .NET 8 SDK
 - Microsoft 365 tenant with Copilot license
+- Microsoft 365 tenant with Ability to create teams apps
 - Azure subscription with Azure OpenAI access
-- Azure AD app registration
+  - Configured Azure Open AI with a gpt-4o-mini model
+- Azure AD app registration permission or appID with secret
 
-> **Note:** This project uses .NET 10 Preview. The SDK may have breaking changes before GA release. For production deployments, consider targeting .NET 9 (LTS) or monitor the .NET 10 release schedule.
 
 ### Setup
 
 1. **Clone and navigate to the project:**
    ```bash
-   cd src/AgentOrchestrator
+   cd AgentOrchestrator
    ```
-
-2. **Configure secrets using .NET User Secrets (recommended):**
-
-   > **SECURITY:** Never commit secrets to version control. Use user-secrets for development.
-
-   ```bash
-   # Initialize user secrets
-   dotnet user-secrets init
-
-   # Set Bot Service credentials
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientId" "your-bot-client-id"
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientSecret" "your-bot-secret"
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:TenantId" "your-tenant-id"
-
-   # Set Azure AD credentials (for user authentication)
-   dotnet user-secrets set "AzureAd:TenantId" "your-tenant-id"
-   dotnet user-secrets set "AzureAd:ClientId" "your-client-id"
-   dotnet user-secrets set "AzureAd:ClientSecret" "your-client-secret"
-
-   # Set Azure OpenAI credentials
-   dotnet user-secrets set "AzureOpenAI:Endpoint" "https://your-resource.openai.azure.com/"
-   dotnet user-secrets set "AzureOpenAI:ApiKey" "your-api-key"
-   dotnet user-secrets set "AzureOpenAI:DeploymentName" "gpt-4o"
-   ```
-
-   Alternatively, copy `appsettings.Development.json.template` to `appsettings.Development.json` and fill in values (but never commit this file).
-
-3. **Run the application:**
-   ```bash
-   dotnet run --urls "http://localhost:5001"
-   ```
-
-4. **Open your browser:**
-   Navigate to `http://localhost:5001` (port 5000 may conflict with macOS AirPlay)
-
-5. **Login and start chatting!**
 
 ## Features
 
@@ -144,8 +105,6 @@ src/AgentOrchestrator/
 │   └── SynthesisPlugin.cs
 ├── CopilotSdk/                # Kiota-generated API client
 ├── Auth/                      # Authentication components
-├── Security/                  # Security utilities
-│   └── InputSanitizer.cs      # Prompt injection protection
 ├── Models/                    # Data models
 └── wwwroot/                   # Web UI
 ```
@@ -183,57 +142,11 @@ The Copilot Chat API (`/beta/copilot/conversations`) enables:
 
 ---
 
-## Deployment
-
-### Local Development
-
-For local development, run with the Development environment:
-
-```bash
-cd src/AgentOrchestrator
-ASPNETCORE_ENVIRONMENT=Development dotnet run
-```
-
-### Deploy to Azure (Teams & Copilot)
-
-To deploy as a Microsoft Teams bot or M365 Copilot agent:
-
-1. **Azure App Service** - Host your .NET 10 application
-2. **Azure Bot Service** - Provides channel integration (Teams, Copilot, Web Chat)
-3. **Teams App Package** - Manifest for Microsoft Teams
-
-See **[Azure Deployment Guide](docs/AZURE_DEPLOYMENT.md)** for complete step-by-step instructions.
-
-```
-src/AgentOrchestrator/
-├── appsettings.json      # Includes Bot Service connection config
-└── appPackage/
-    ├── manifest.json     # Teams/Copilot app manifest
-    ├── color.png         # App icon (192x192)
-    └── outline.png       # App icon (32x32)
-```
-
----
-
 ## For Lab Participants
 
-### Security Features
+### Security Notice
 
-This lab implements production-grade security practices:
-
-| Feature | Implementation |
-|---------|----------------|
-| **Token Encryption** | AES-256 encryption at rest using PBKDF2-derived keys |
-| **Session Cleanup** | Automatic TTL-based cleanup (8hr session, 15min cleanup interval) |
-| **Prompt Injection Protection** | Input sanitization with XML delimiters and suspicious pattern detection |
-| **CSRF Protection** | Cryptographically secure state parameter using `RandomNumberGenerator` |
-| **Error Handling** | Generic error messages to users; detailed logging server-side |
-| **Swagger Protection** | API documentation only available in Development environment |
-| **Thread-Safe Token Refresh** | Per-session semaphores prevent concurrent refresh race conditions |
-
-### Security Markers in Code
-
-Pay attention to these markers in the code:
+This lab uses simplified patterns for educational purposes. Pay attention to these markers in the code:
 
 | Marker | Meaning |
 |--------|---------|
@@ -243,9 +156,9 @@ Pay attention to these markers in the code:
 
 **Key differences from production code:**
 - **Secrets:** Lab uses `appsettings.json` template; production uses Azure Key Vault
-- **Token Cache:** Lab encrypts in-memory; production uses Redis with encryption
+- **Token Cache:** Lab uses in-memory; production uses Redis or SQL Server
 - **Session Storage:** Lab uses in-memory; production uses distributed cache
-- **HTTP:** Lab runs on HTTP locally; production requires HTTPS
+- **HTTP:** Lab runs on HTTP; production requires HTTPS
 
 ### Common Issues
 

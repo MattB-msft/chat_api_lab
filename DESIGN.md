@@ -164,8 +164,7 @@ The SDK provides strongly-typed models and handles serialization automatically.
 ```
 openid, profile, email, User.Read
 Mail.Read, Calendars.Read, Files.Read.All
-Sites.Read.All, People.Read.All, Chat.Read
-OnlineMeetingTranscript.Read.All, ChannelMessage.Read.All, ExternalItem.Read.All
+Sites.Read.All, People.Read, Chat.Read
 ```
 
 ---
@@ -266,49 +265,12 @@ src/AgentOrchestrator/
 
 ---
 
-## Security Features
-
-The application implements several security measures:
-
-| Feature | Implementation |
-|---------|----------------|
-| **Token Encryption** | AES-256 encryption at rest using PBKDF2-derived keys from ClientSecret |
-| **Session Cleanup** | Automatic TTL-based cleanup (8hr session lifetime, 15min cleanup interval) |
-| **Prompt Injection Protection** | Input sanitization with XML delimiters and suspicious pattern detection |
-| **CSRF Protection** | Cryptographically secure state parameter using `RandomNumberGenerator` |
-| **Error Handling** | Generic error messages to users; detailed logging server-side only |
-| **Swagger Protection** | API documentation only available in Development environment |
-| **Thread-Safe Token Refresh** | Per-session `SemaphoreSlim` prevents concurrent refresh race conditions |
-
-### Security Components
-
-```
-src/AgentOrchestrator/
-├── Security/
-│   └── InputSanitizer.cs       # Prompt injection protection
-├── Auth/
-│   ├── TokenService.cs         # Encrypted token cache with TTL
-│   ├── AuthEndpoints.cs        # CSRF-protected OAuth flow
-│   └── AuthMiddleware.cs       # Session validation, Swagger protection
-```
-
----
-
 ## Configuration
 
 ### appsettings.json
 
 ```json
 {
-  "Connections": {
-    "BotServiceConnection": {
-      "Settings": {
-        "ClientId": "<your-bot-client-id>",
-        "ClientSecret": "<your-bot-client-secret>",
-        "TenantId": "<your-tenant-id>"
-      }
-    }
-  },
   "AzureAd": {
     "Instance": "https://login.microsoftonline.com/",
     "TenantId": "<your-tenant-id>",
@@ -317,8 +279,7 @@ src/AgentOrchestrator/
     "CallbackPath": "/auth/callback",
     "Scopes": ["openid", "profile", "email", "User.Read", "Mail.Read",
                "Calendars.Read", "Files.Read.All", "Sites.Read.All",
-               "People.Read.All", "Chat.Read", "OnlineMeetingTranscript.Read.All",
-               "ChannelMessage.Read.All", "ExternalItem.Read.All"]
+               "People.Read", "Chat.Read"]
   },
   "AzureOpenAI": {
     "Endpoint": "https://<your-resource>.openai.azure.com/",
@@ -327,20 +288,7 @@ src/AgentOrchestrator/
   },
   "MicrosoftGraph": {
     "BaseUrl": "https://graph.microsoft.com/beta",
-    "CopilotChatEndpoint": "/copilot/conversations"
-  },
-  "AgentApplication": {
-    "UserAuthorization": {
-      "DefaultHandlerName": "graph",
-      "AutoSignIn": true,
-      "Handlers": {
-        "graph": {
-          "Settings": {
-            "AzureBotOAuthConnectionName": "GraphConnection"
-          }
-        }
-      }
-    }
+    "CopilotChatEndpoint": "/me/copilot/chats"
   }
 }
 ```
@@ -400,4 +348,4 @@ The M365 Agents SDK enables deployment to multiple channels:
 ---
 
 *Design Version: 2.0 (M365 Agents SDK)*
-*Last Updated: January 2026*
+*Last Updated: January 2025*
