@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentOrchestrator", "src\AgentOrchestrator.csproj", "{4ED9480F-F1FC-0677-0EFF-2ABD3DF0734A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentOrchestrator.Tests", "tests\AgentOrchestrator.Tests\AgentOrchestrator.Tests.csproj", "{1DA53218-1A6A-7FA8-47D5-1BD44651F443}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4ED9480F-F1FC-0677-0EFF-2ABD3DF0734A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ED9480F-F1FC-0677-0EFF-2ABD3DF0734A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ED9480F-F1FC-0677-0EFF-2ABD3DF0734A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ED9480F-F1FC-0677-0EFF-2ABD3DF0734A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DA53218-1A6A-7FA8-47D5-1BD44651F443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DA53218-1A6A-7FA8-47D5-1BD44651F443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DA53218-1A6A-7FA8-47D5-1BD44651F443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DA53218-1A6A-7FA8-47D5-1BD44651F443}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38952C54-2B0B-4BB8-90FD-FDB83B31D357}
+	EndGlobalSection
+EndGlobal
