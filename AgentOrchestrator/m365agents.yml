@@ -25,7 +25,7 @@ provision:
 
   - uses: file/createOrUpdateJsonFile
     with:
-      target: ./src/appsettings.local.json
+      target: ./src/appsettings.json
       content:
         AgentType: M365ChatAPIAgent
         AgentApplication:
