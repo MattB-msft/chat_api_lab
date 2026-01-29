@@ -1,9 +1,5 @@
 # Microsoft 365 Copilot Chat API + Agents SDK Lab
 
-> **🚀 Quick Start Options:**
-> - [Local Development](QUICK_START_LOCAL.md) — Run locally in 10 minutes
-> - [Azure Deployment](QUICK_START.md) — Deploy to Azure with Teams integration
-
 ## Why Microsoft 365 Copilot in Your Agent Architecture?
 
 As AI applications evolve toward **multi-agent architectures**, the question isn't whether to use multiple agents—it's which agents provide the most value. **Microsoft 365 Copilot** offers unique capabilities that no custom RAG pipeline can easily replicate:
@@ -83,12 +79,7 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
    # Initialize user secrets
    dotnet user-secrets init
 
-   # Set Bot Service credentials
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientId" "your-bot-client-id"
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:ClientSecret" "your-bot-secret"
-   dotnet user-secrets set "Connections:BotServiceConnection:Settings:TenantId" "your-tenant-id"
-
-   # Set Azure AD credentials (for user authentication)
+   # Set Azure AD credentials
    dotnet user-secrets set "AzureAd:TenantId" "your-tenant-id"
    dotnet user-secrets set "AzureAd:ClientId" "your-client-id"
    dotnet user-secrets set "AzureAd:ClientSecret" "your-client-secret"
@@ -103,11 +94,11 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 
 3. **Run the application:**
    ```bash
-   dotnet run --urls "http://localhost:5001"
+   dotnet run
    ```
 
 4. **Open your browser:**
-   Navigate to `http://localhost:5001` (port 5000 may conflict with macOS AirPlay)
+   Navigate to `http://localhost:5000`
 
 5. **Login and start chatting!**
 
@@ -144,8 +135,6 @@ src/AgentOrchestrator/
 │   └── SynthesisPlugin.cs
 ├── CopilotSdk/                # Kiota-generated API client
 ├── Auth/                      # Authentication components
-├── Security/                  # Security utilities
-│   └── InputSanitizer.cs      # Prompt injection protection
 ├── Models/                    # Data models
 └── wwwroot/                   # Web UI
 ```
@@ -183,57 +172,11 @@ The Copilot Chat API (`/beta/copilot/conversations`) enables:
 
 ---
 
-## Deployment
-
-### Local Development
-
-For local development, run with the Development environment:
-
-```bash
-cd src/AgentOrchestrator
-ASPNETCORE_ENVIRONMENT=Development dotnet run
-```
-
-### Deploy to Azure (Teams & Copilot)
-
-To deploy as a Microsoft Teams bot or M365 Copilot agent:
-
-1. **Azure App Service** - Host your .NET 10 application
-2. **Azure Bot Service** - Provides channel integration (Teams, Copilot, Web Chat)
-3. **Teams App Package** - Manifest for Microsoft Teams
-
-See **[Azure Deployment Guide](docs/AZURE_DEPLOYMENT.md)** for complete step-by-step instructions.
-
-```
-src/AgentOrchestrator/
-├── appsettings.json      # Includes Bot Service connection config
-└── appPackage/
-    ├── manifest.json     # Teams/Copilot app manifest
-    ├── color.png         # App icon (192x192)
-    └── outline.png       # App icon (32x32)
-```
-
----
-
 ## For Lab Participants
 
-### Security Features
+### Security Notice
 
-This lab implements production-grade security practices:
-
-| Feature | Implementation |
-|---------|----------------|
-| **Token Encryption** | AES-256 encryption at rest using PBKDF2-derived keys |
-| **Session Cleanup** | Automatic TTL-based cleanup (8hr session, 15min cleanup interval) |
-| **Prompt Injection Protection** | Input sanitization with XML delimiters and suspicious pattern detection |
-| **CSRF Protection** | Cryptographically secure state parameter using `RandomNumberGenerator` |
-| **Error Handling** | Generic error messages to users; detailed logging server-side |
-| **Swagger Protection** | API documentation only available in Development environment |
-| **Thread-Safe Token Refresh** | Per-session semaphores prevent concurrent refresh race conditions |
-
-### Security Markers in Code
-
-Pay attention to these markers in the code:
+This lab uses simplified patterns for educational purposes. Pay attention to these markers in the code:
 
 | Marker | Meaning |
 |--------|---------|
@@ -243,9 +186,9 @@ Pay attention to these markers in the code:
 
 **Key differences from production code:**
 - **Secrets:** Lab uses `appsettings.json` template; production uses Azure Key Vault
-- **Token Cache:** Lab encrypts in-memory; production uses Redis with encryption
+- **Token Cache:** Lab uses in-memory; production uses Redis or SQL Server
 - **Session Storage:** Lab uses in-memory; production uses distributed cache
-- **HTTP:** Lab runs on HTTP locally; production requires HTTPS
+- **HTTP:** Lab runs on HTTP; production requires HTTPS
 
 ### Common Issues
 

@@ -25,7 +25,7 @@ This lab builds a .NET 10 Agent using:
 
 ### Required Software
 - [ ] [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- [ ] Code editor (Visual Studio 2022+, VS Code with C# Dev Kit, or JetBrains Rider)
+- [ ] Code editor (Visual Studio 2025, VS Code with C# Dev Kit, or JetBrains Rider)
 - [ ] Modern web browser (Microsoft Edge or Google Chrome)
 - [ ] [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) (optional, for resource management)
 
@@ -41,14 +41,10 @@ The lab uses these key packages (automatically restored):
 <!-- Microsoft 365 Agents SDK -->
 <PackageReference Include="Microsoft.Agents.Hosting.AspNetCore" Version="1.1.151" />
 <PackageReference Include="Microsoft.Agents.Builder" Version="1.1.151" />
-<PackageReference Include="Microsoft.Agents.Authentication.Msal" Version="1.1.151" />
 
 <!-- Semantic Kernel -->
 <PackageReference Include="Microsoft.SemanticKernel" Version="1.54.0" />
 <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.54.0" />
-
-<!-- Resilience -->
-<PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
 ```
 
 ## Azure Resource Setup
@@ -147,7 +143,6 @@ The M365 Copilot Chat API allows your application to programmatically interact w
 | Aspect | Detail |
 |--------|--------|
 | **API Endpoint** | `https://graph.microsoft.com/beta/copilot/conversations` |
-| **Chat Endpoint** | `POST /copilot/conversations/{id}/chat` |
 | **SDK** | Kiota-generated CopilotSdk (included in project) |
 | **API Status** | Beta (subject to change) |
 | **Auth Type** | Delegated (user context) |

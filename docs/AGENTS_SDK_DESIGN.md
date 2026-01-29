@@ -1,7 +1,5 @@
 # .NET 10 Agent on Microsoft 365 Agents SDK
 
-> **Note**: This is a migration reference document. For current architecture details, see [DESIGN.md](../../DESIGN.md).
-
 ## Overview
 
 This document outlines the design for migrating the .NET 10 Agent from a custom Minimal API implementation to the **Microsoft 365 Agents SDK**. This migration enables multi-channel deployment (Teams, M365 Copilot, Web) while maintaining the agent-to-agent orchestration pattern with M365 Copilot Chat API.
@@ -609,4 +607,4 @@ private async Task<string> GetUserAccessTokenAsync(
 ---
 
 *Design Version: 1.0*
-*Last Updated: January 2026*
+*Last Updated: January 2025*
