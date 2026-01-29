@@ -51,56 +51,26 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 | **Orchestration** | Semantic Kernel 1.54.x |
 | **AI Model** | Azure OpenAI (GPT-4o) |
 | **M365 Integration** | Microsoft Graph Copilot Chat API |
-| **Runtime** | .NET 10 |
+| **Runtime** | .NET 8 |
 
 ## Quick Start
 
 ### Prerequisites
 
-- .NET 10 SDK (Preview - see note below)
+- .NET 8 SDK
 - Microsoft 365 tenant with Copilot license
+- Microsoft 365 tenant with Ability to create teams apps
 - Azure subscription with Azure OpenAI access
-- Azure AD app registration
+  - Configured Azure Open AI with a gpt-4o-mini model
+- Azure AD app registration permission or appID with secret
 
-> **Note:** This project uses .NET 10 Preview. The SDK may have breaking changes before GA release. For production deployments, consider targeting .NET 9 (LTS) or monitor the .NET 10 release schedule.
 
 ### Setup
 
 1. **Clone and navigate to the project:**
    ```bash
-   cd src/AgentOrchestrator
+   cd AgentOrchestrator
    ```
-
-2. **Configure secrets using .NET User Secrets (recommended):**
-
-   > **SECURITY:** Never commit secrets to version control. Use user-secrets for development.
-
-   ```bash
-   # Initialize user secrets
-   dotnet user-secrets init
-
-   # Set Azure AD credentials
-   dotnet user-secrets set "AzureAd:TenantId" "your-tenant-id"
-   dotnet user-secrets set "AzureAd:ClientId" "your-client-id"
-   dotnet user-secrets set "AzureAd:ClientSecret" "your-client-secret"
-
-   # Set Azure OpenAI credentials
-   dotnet user-secrets set "AzureOpenAI:Endpoint" "https://your-resource.openai.azure.com/"
-   dotnet user-secrets set "AzureOpenAI:ApiKey" "your-api-key"
-   dotnet user-secrets set "AzureOpenAI:DeploymentName" "gpt-4o"
-   ```
-
-   Alternatively, copy `appsettings.Development.json.template` to `appsettings.Development.json` and fill in values (but never commit this file).
-
-3. **Run the application:**
-   ```bash
-   dotnet run
-   ```
-
-4. **Open your browser:**
-   Navigate to `http://localhost:5000`
-
-5. **Login and start chatting!**
 
 ## Features
 

@@ -33,28 +33,28 @@
           "scopes": [ "copilot", "personal", "team", "groupChat" ],
           "commands": [
             {
-              "title": "Instructions",
-              "description": "What can you do?"
+              "title": "Email",
+              "description": "Send an email using the M365ChatAPI."
             },
             {
-              "title": "Get Claim Details",
-              "description": "Get details for claim CLM-2025-001007"
+              "title": "Calendar",
+              "description": "What meetings do I have tomorrow?"
             },
             {
-              "title": "Check Policy Coverage",
-              "description": "Check policy for claim CLM-2025-001007"
+              "title": "Files",
+              "description": "Find the latest project proposal document"
             },
             {
-              "title": "Show Damage Photo",
-              "description": "Show damage photo for claim CLM-2025-001007"
+              "title": "People",
+              "description": "Who has expertise in Azure in my team?"
             },
             {
-              "title": "Check Claim Compliance",
-              "description": "Check compliance for claim CLM-2025-001007"
+              "title": "General",
+              "description": "Explain what microservices are"
             },
             {
-              "title": "Send claim by e-mail",
-              "description": "Send claim details for claim CLM-2025-001007 to claims-handling@cam2652601.onmicrosoft.com"
+              "title": "Multi-Intent",
+              "description": "Summarize my emails and explain REST APIs"
             }
           ]
         }
