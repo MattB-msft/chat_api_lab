@@ -1,5 +1,9 @@
 # Microsoft 365 Copilot Chat API + Agents SDK Lab
 
+> **🚀 Quick Start Options:**
+> - [Local Development](QUICK_START_LOCAL.md) — Run locally in 10 minutes
+> - [Azure Deployment](QUICK_START.md) — Deploy to Azure with Teams integration
+
 ## Why Microsoft 365 Copilot in Your Agent Architecture?
 
 As AI applications evolve toward **multi-agent architectures**, the question isn't whether to use multiple agents—it's which agents provide the most value. **Microsoft 365 Copilot** offers unique capabilities that no custom RAG pipeline can easily replicate:
@@ -99,11 +103,11 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 
 3. **Run the application:**
    ```bash
-   dotnet run
+   dotnet run --urls "http://localhost:5001"
    ```
 
 4. **Open your browser:**
-   Navigate to `http://localhost:5000`
+   Navigate to `http://localhost:5001` (port 5000 may conflict with macOS AirPlay)
 
 5. **Login and start chatting!**
 

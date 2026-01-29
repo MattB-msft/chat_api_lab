@@ -2,6 +2,8 @@
 
 Get the Agent Orchestrator running in Azure with Teams integration in under 30 minutes.
 
+> **Local Development?** See the [README](README.md#quick-start) for running locally with `dotnet run`.
+
 ## Prerequisites Checklist
 
 Before starting, ensure you have:
