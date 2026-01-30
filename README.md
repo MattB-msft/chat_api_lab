@@ -45,7 +45,7 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 
 ## Technology Stack
 
-- **.NET 8** - Target framework
+- **.NET 8** - Target framework 
 - **Microsoft 365 Agents SDK 1.4** - Agent framework with multi-channel support
 - **Semantic Kernel 1.54** - AI orchestration and plugin pattern
 - **Azure OpenAI** - GPT-4o for intent analysis and general knowledge
@@ -58,12 +58,16 @@ This lab demonstrates how to build a **.NET 10 Agent** using the **Microsoft 365
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 8 SDK ( make sure to install .Net 8)
 - Microsoft 365 tenant with Copilot license
+- Admin Access to the Microsoft 365 tenant (to configure Copilot API permissions)
+- M365 Agent Toolkit (ATK)
 - Microsoft 365 tenant with Ability to create teams apps
 - Azure subscription with Azure OpenAI access
   - Configured Azure Open AI with a gpt-4o-mini model
 - Azure AD app registration permission or appID with secret
+- Azure CLI 
+
 
 ### Setup
 
@@ -117,15 +121,6 @@ AgentOrchestrator/
 ├── appPackage/                        # Teams app manifest
 └── infra/                             # Infrastructure scripts
 ```
-
-
-## Documentation
-
-- [Design Document](DESIGN.md)
-- [Self-Paced Lab Guide](docs/self-paced/LAB_GUIDE.md)
-- [Prerequisites](docs/self-paced/PREREQUISITES.md)
-- [Troubleshooting](docs/self-paced/TROUBLESHOOTING.md)
-- [Instructor Guide](docs/instructor-led/FACILITATOR_GUIDE.md)
 
 ## Key Concepts
 
@@ -221,6 +216,12 @@ After completing this lab, you should understand:
 3. **OAuth 2.0** - Authorization code flow with MSAL
 4. **M365 Copilot Chat API** - Two-step conversation pattern
 5. **Resilience Patterns** - Retry, circuit breaker, and timeout handling
+
+## Documentation
+
+- [Design Document](DESIGN.md)
+- [Troubleshooting](docs/self-paced/TROUBLESHOOTING.md)
+
 
 ## License
 
