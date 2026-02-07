@@ -158,26 +158,6 @@ public class M365CopilotPlugin
             _logger.LogInformation("Received Copilot response");
             return responseText;
         }
-        //catch (CopilotSdk.Models.CopilotConversation401Error ex)
-        //{
-        //    _logger.LogError(ex, "Unauthorized - token may be expired or invalid");
-        //    throw new UnauthorizedAccessException("Your session has expired. Please log in again.");
-        //}
-        //catch (CopilotSdk.Models.CopilotConversation403Error ex)
-        //{
-        //    _logger.LogError(ex, "Forbidden - user may lack Copilot license");
-        //    return "You don't have access to Microsoft 365 Copilot. Please contact your administrator to verify your license.";
-        //}
-        //catch (CopilotSdk.Models.CopilotConversation404Error ex)
-        //{
-        //    _logger.LogError(ex, "Not found - conversation or endpoint not available");
-        //    return "The Copilot service is not available. Please try again later.";
-        //}
-        //catch (CopilotSdk.Models.CopilotConversation500Error ex)
-        //{
-        //    _logger.LogError(ex, "Server error from Copilot API");
-        //    return "The Copilot service encountered an error. Please try again later.";
-        //}
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error calling Copilot Chat API");

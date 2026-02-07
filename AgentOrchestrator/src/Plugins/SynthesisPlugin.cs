@@ -27,7 +27,7 @@ public class SynthesisPlugin
         
         await _context.Context.StreamingResponse.QueueInformativeUpdateAsync("Synthesizing responses...");
 
-        var prompt = $"""
+        var prompt = $""""
             You are a response synthesizer. Your job is to combine multiple agent responses into a single,
             coherent response that addresses the user's original query.
 
@@ -44,11 +44,21 @@ public class SynthesisPlugin
             5. Ensure the response directly addresses the user's original query
             6. Keep the tone helpful and conversational
             7. If one response is about M365 data (emails, calendar, etc.) and another is general knowledge,
-               present the M365 data first, then the general information
+               present the M365 data first, then the general information.
+            8. Make sure that all responses are represented is represented in Markdown format for better readability.
+
+            """";
+        var addtionrules = """"
+
+
+            """";
+
+        var prompt2 = $""""
 
             Synthesized Response:
-            """;
+            """";
 
+        prompt += prompt2;
         var result = await _kernel.InvokePromptAsync(prompt, cancellationToken: cancellationToken);
         return result.GetValue<string>() ?? "I couldn't synthesize a response.";
     }

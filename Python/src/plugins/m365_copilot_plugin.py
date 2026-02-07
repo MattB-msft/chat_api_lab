@@ -20,8 +20,11 @@ See: https://learn.microsoft.com/graph/api/resources/copilot-api-overview
 This implementation mirrors the .NET M365CopilotPlugin.cs
 """
 
+import json
 from typing import Annotated, Optional, List
 import logging
+
+import microsoft_agents_m365copilot_beta
 
 from plugins.user_authorization_token_wrapper import UserAuthorizationTokenWrapper
 from semantic_kernel import Kernel
@@ -30,9 +33,12 @@ from microsoft_agents_m365copilot_beta import (
     AgentsM365CopilotBetaServiceClient 
     )
 from microsoft_agents_m365copilot_beta.generated.models import (
-    copilot_conversation,
+    copilot_conversation_request_message,
 )
-
+from microsoft_agents_m365copilot_beta.generated.copilot.conversations.item.microsoft_graph_copilot_chat.chat_post_request_body import (
+     ChatPostRequestBody,
+     #CopilotConversationLocation
+)
 
 from plugins.agent_context import AgentContext
 
@@ -197,10 +203,9 @@ class M365CopilotPlugin:
             if not conversation_id:
                 self._logger.info("Creating conversation...")
 
-                b : copilot_conversation = copilot_conversation.CopilotConversation()
                 # POST to /beta/copilot/conversations
                 conversation = await client.copilot.conversations.post(
-                    body=b
+                    body=json.loads('{}')
                 )
 
                 if not conversation or not conversation.id:
@@ -216,22 +221,16 @@ class M365CopilotPlugin:
             # Import chat-specific types
             # Note: The exact import path may vary based on SDK version
             try:
-                # Try to import ChatPostRequestBody
-                # The structure mirrors the .NET ChatPostRequestBody (lines 136-143)
-                chat_request_body = {
-                    "message": {
-                        "text": query
-                    },
-                    "locationHint": {
-                        "timeZone": "America/Los_Angeles"
-                    }
-                }
 
+                request_body = ChatPostRequestBody(
+                #    location_hint=CopilotConversationLocation(time_zone="America/Los_Angeles"),
+                    message=copilot_conversation_request_message.CopilotConversationRequestMessage(text=query)
+                )
                 # POST to /beta/copilot/conversations/{id}/microsoft.graph.copilot.chat
                 # This endpoint mirrors line 146 in .NET
                 response = await client.copilot.conversations.by_copilot_conversation_id(
                     conversation_id
-                ).microsoft_graph_copilot_chat.post(chat_request_body)
+                ).microsoft_graph_copilot_chat.post(body=request_body)
 
                 # Extract response (mirrors lines 148-159)
                 if not response or not hasattr(response, 'messages') or not response.messages:
@@ -308,6 +307,7 @@ class M365CopilotPlugin:
         # Create client 
         # Python SDK automatically handles request adapter creation
         client = AgentsM365CopilotBetaServiceClient(credentials=wrapper)
+        client.request_adapter.base_url = "https://graph.microsoft.com/beta/"
 
         return client
 
