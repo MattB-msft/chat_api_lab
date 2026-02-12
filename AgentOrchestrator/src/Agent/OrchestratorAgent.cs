@@ -15,7 +15,7 @@ public class OrchestratorAgent : AgentApplication
 {
     private readonly Kernel _kernel;
     //private readonly ITokenService _tokenService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    //private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly OrchestrationSettings _orchestrationSettings;
     private readonly ILogger<OrchestratorAgent> _logger;
     private readonly IServiceProvider sp;
@@ -34,7 +34,7 @@ public class OrchestratorAgent : AgentApplication
     {
         sp= serviceProvider;
         _kernel = kernel.Clone();
-        _httpContextAccessor = httpContextAccessor;
+        //_httpContextAccessor = httpContextAccessor;
         _orchestrationSettings = orchestrationSettings;
         _logger = logger;
 
@@ -108,9 +108,9 @@ public class OrchestratorAgent : AgentApplication
             // Step 3: Synthesize response
             _logger.LogInformation("Step 3: Synthesizing response...");
             var finalResponse = await SynthesizeResponseAsync(userMessage, responses, timeoutToken);
-
             // Step 4: Send response
-            turnContext.StreamingResponse.QueueTextChunk(finalResponse);
+            //turnContext.StreamingResponse.QueueTextChunk(finalResponse);
+            turnContext.StreamingResponse.FinalMessage = MessageFactory.CreateMessageActivity(finalResponse, textFormat: TextFormatTypes.Markdown);
 
             _logger.LogInformation("Response sent successfully");
         }

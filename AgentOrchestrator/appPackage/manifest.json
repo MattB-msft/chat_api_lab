@@ -14,7 +14,7 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "M365ChatAPI Multi-Agent",
+    "short": "${{APP_DISPLAY_NAME}}",
     "full": "${{APP_DISPLAY_NAME}}: Agent for demonstrating multi-agent capabilities using the M365ChatAPI."
   },
   "description": {
